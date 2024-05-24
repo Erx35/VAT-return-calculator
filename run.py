@@ -29,21 +29,25 @@ class VatListItem:
     Calculate the vat value for the product
     """
     def get_vat_value(self):
-        headings = SHEET.worksheet("vat_cat_list").get_all_values()[1:6] 
-        new_dict = {headings[i][0]: headings[i][1] for i in range(0,5)}
+        vat_cats = SHEET.worksheet("vat_cat_list").get_all_values()[1:6] 
+        new_dict = {vat_cats[i][0]: vat_cats[i][1] for i in range(len(vat_cats))}
         vat_price = self.price * float(new_dict[self.vat_class])
         return vat_price
 
 
-def get_column_names():
-    headings = SHEET.worksheet("vat_cat_list").get_all_values()[1:6] 
-    new_dict = {headings[i][0]: headings[i][1] for i in range(0,5)}
-    new_dict['2']
+def main():
+    print("welcome to Vat calculator")
+    vat_item = input("Pleae enter your item data:\n")
+    data_str = vat_item.split(",")
+    print(data_str)
+    lsist_item = VatListItem(data_str[0], float(data_str[1]), data_str[2])
+    print(lsist_item)
+    print(lsist_item.get_vat_value())
+    worksheet_to_update = SHEET.worksheet("item_list")
+    worksheet_to_update.append_row(data_str)
 
 
-    return headings
-
-
+main()
 #radio = VatListItem("Radio", 125.63, "2")
 
-print(datetime.now())
+#print(datetime.now())
