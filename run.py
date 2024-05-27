@@ -34,18 +34,36 @@ class VatListItem:
         vat_price = self.price * float(new_dict[self.vat_class])
         return vat_price
 
+    def add_item_to_db(self):
+        worksheet_to_update = SHEET.worksheet("item_list")
+        worksheet_to_update.append_row([self.name, self.price, self.vat_class, str(datetime.now())])
+
+
+def calculate_vat_return():
+    items_list = SHEET.worksheet("item_list").get_all_values()[1:]
+    vat_cats = SHEET.worksheet("vat_cat_list").get_all_values()[1:6]
+    new_dict = {vat_cats[i][0]: vat_cats[i][1] for i in range(len(vat_cats))}
+    vat_return = 0
+    for item in items_list:
+        vat_return += float(item[1]) * float(new_dict[item[2]])
+    return vat_return
+
+def add_vat_return_to_db(vat_return):
+    data_str = [str(vat_return), str(datetime.now())]
+    worksheet_to_update = SHEET.worksheet("vat_report")
+    worksheet_to_update.append_row(data_str)
+
+
 
 def main():
     print("welcome to Vat calculator")
     vat_item = input("Pleae enter your item data:\n")
     data_str = vat_item.split(",")
-    print(data_str)
     lsist_item = VatListItem(data_str[0], float(data_str[1]), data_str[2])
-    print(lsist_item)
-    print(lsist_item.get_vat_value())
-    worksheet_to_update = SHEET.worksheet("item_list")
-    worksheet_to_update.append_row(data_str)
+    lsist_item.add_item_to_db()
 
+
+#add_vat_return_to_db(calculate_vat_return())
 
 main()
 #radio = VatListItem("Radio", 125.63, "2")
