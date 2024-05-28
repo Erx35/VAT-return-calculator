@@ -49,10 +49,6 @@ def calculate_vat_return():
     print("Calculating VAT return for items in the database")
     items_list = SHEET.worksheet("item_list").get_all_values()[1:]
     vat_cats = SHEET.worksheet("vat_cat_list").get_all_values()[1:6]
-    worksheet_to_update = SHEET.worksheet("registred_item_list")
-
-    for row in items_list:
-        worksheet_to_update.append_row(row)
     new_dict = {vat_cats[i][0]: vat_cats[i][1] for i in range(len(vat_cats))}
 
     vat_return = 0
@@ -60,8 +56,13 @@ def calculate_vat_return():
         vat_return += float(item[1]) * float(new_dict[item[2]])
 
     print("Removing calculated items from active database to backup database")
-    worksheet_to_update = SHEET.worksheet("item_list")
-    worksheet_to_update.delete_rows(2,99)
+    worksheet_to_update = SHEET.worksheet("registred_item_list")
+
+    for row in items_list:
+        worksheet_to_update.append_row(row)
+
+    worksheet_to_delete = SHEET.worksheet("item_list")
+    worksheet_to_delete.delete_rows(2,99)
     
     return vat_return
 
