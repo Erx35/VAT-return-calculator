@@ -26,29 +26,50 @@ class VatListItem:
         self.price = price
         self.vat_class = vat_class
     """
-    Calculate the vat value for the product
+    Calculate the vat value for the current product
     """
     def get_vat_value(self):
+        print("Calculating total VAT return")
         vat_cats = SHEET.worksheet("vat_cat_list").get_all_values()[1:6] 
         new_dict = {vat_cats[i][0]: vat_cats[i][1] for i in range(len(vat_cats))}
         vat_price = self.price * float(new_dict[self.vat_class])
         return vat_price
-
+    """
+    Add user entered data to the database
+    """
     def add_item_to_db(self):
+        print("Adding item to the VAT database")
         worksheet_to_update = SHEET.worksheet("item_list")
         worksheet_to_update.append_row([self.name, self.price, self.vat_class, str(datetime.now())])
 
-
+"""
+Calculate VAT for the whole DB entriwes
+"""
 def calculate_vat_return():
+    print("Calculating VAT return for items in the database")
     items_list = SHEET.worksheet("item_list").get_all_values()[1:]
     vat_cats = SHEET.worksheet("vat_cat_list").get_all_values()[1:6]
+    worksheet_to_update = SHEET.worksheet("registred_item_list")
+
+    for row in items_list:
+        worksheet_to_update.append_row(row)
     new_dict = {vat_cats[i][0]: vat_cats[i][1] for i in range(len(vat_cats))}
+
     vat_return = 0
     for item in items_list:
         vat_return += float(item[1]) * float(new_dict[item[2]])
+
+    print("Removing calculated items from active database to backup database")
+    worksheet_to_update = SHEET.worksheet("item_list")
+    worksheet_to_update.delete_rows(2,99)
+    
     return vat_return
 
+"""
+Add calculated VAT return to the database
+"""
 def add_vat_return_to_db(vat_return):
+    print("Adding calculated VAT return to the database")
     data_str = [str(vat_return), str(datetime.now())]
     worksheet_to_update = SHEET.worksheet("vat_report")
     worksheet_to_update.append_row(data_str)
@@ -57,15 +78,13 @@ def add_vat_return_to_db(vat_return):
 
 def main():
     print("welcome to Vat calculator")
+    print(f'Format of the VAT item entry is "item name,price,vat category')
     vat_item = input("Pleae enter your item data:\n")
     data_str = vat_item.split(",")
     lsist_item = VatListItem(data_str[0], float(data_str[1]), data_str[2])
     lsist_item.add_item_to_db()
 
 
-#add_vat_return_to_db(calculate_vat_return())
 
-main()
-#radio = VatListItem("Radio", 125.63, "2")
-
-#print(datetime.now())
+#main()
+calculate_vat_return()
