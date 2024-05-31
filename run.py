@@ -23,7 +23,7 @@ class VatListItem:
     """
     Create vat list item objects
     """
-    def __init__(self,name, price, vat_class):
+    def __init__(self, name, price, vat_class):
         self.name = name
         self.price = price
         self.vat_class = vat_class
@@ -32,7 +32,7 @@ class VatListItem:
     """
     def get_vat_value(self):
         print("Calculating total VAT return")
-        vat_cats = SHEET.worksheet("vat_cat_list").get_all_values()[1:6] 
+        vat_cats = SHEET.worksheet("vat_cat_list").get_all_values()[1:6]
         new_dict = {vat_cats[i][0]: vat_cats[i][1] for i in range(len(vat_cats))}
         vat_price = self.price * float(new_dict[self.vat_class])
         return vat_price
@@ -44,23 +44,32 @@ class VatListItem:
         worksheet_to_update = SHEET.worksheet("item_list")
         worksheet_to_update.append_row([self.name, self.price, self.vat_class, str(datetime.now())])
 
+
 """
 Clear the terminal after user presses enter
 """
+
+
 def input_and_clear():
     input("Press enter to continue")
     system('cls||clear')
 
+
 """
 Print out the database entries
 """
+
+
 def print_db_content(sheet):
     all_items = SHEET.worksheet(sheet).get_all_values()[1:]
     [print(item) for item in all_items]
 
+
 """
 Calculate VAT for the whole DB entriwes
 """
+
+
 def calculate_vat_return():
     print("Calculating VAT return for items in the database")
     items_list = SHEET.worksheet("item_list").get_all_values()[1:]
@@ -79,13 +88,15 @@ def calculate_vat_return():
             worksheet_to_update.append_row(row)
 
         worksheet_to_delete = SHEET.worksheet("item_list")
-        worksheet_to_delete.delete_rows(2,99)
-    
+        worksheet_to_delete.delete_rows(2, 99)
     return vat_return
+
 
 """
 Add calculated VAT return to the database
 """
+
+
 def add_vat_return_to_db(vat_return):
     if vat_return != 0:
         print("Adding calculated VAT return to the database")
@@ -97,6 +108,8 @@ def add_vat_return_to_db(vat_return):
 """
 Check that the VAT data input is valid
 """
+
+
 def validate_data_input(data):
     try:
         if len(data) != 3:
@@ -107,11 +120,11 @@ def validate_data_input(data):
         print(f'Invalid data: {e}, please try again!\n')
 
 
-
-
 """
 Main function
 """
+
+
 def main():
     print("Welcome to Vat calculator\n")
     selection = ""
@@ -166,7 +179,6 @@ def main():
             case _:
                 print(f'Please enter correct selection! You entered {selection}')
                 input_and_clear()
-                 
+
 
 main()
-
