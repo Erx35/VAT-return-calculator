@@ -154,12 +154,11 @@ def main():
                 list_item.add_item_to_db()
                 vat_value = list_item.get_vat_value()
                 print(f'{list_item.name} has been entered to the database. VAT on the item is: {vat_value}')
-                input_and_clear()
             except ValueError as e:
                 print(f'Could not add data to the database.')
             except IndexError as e:
                 print(f'Not enough data entered for the VAT item.')
-
+            input_and_clear()
         elif selection == '2':
             vat_return_total = calculate_vat_return()
             if vat_return_total == 0:
