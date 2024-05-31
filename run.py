@@ -157,6 +157,8 @@ def main():
                 input_and_clear()
             except ValueError as e:
                 print(f'Could not add data to the database.')
+            except IndexError as e:
+                print(f'Not enough data entered for the VAT item.')
 
         elif selection == '2':
             vat_return_total = calculate_vat_return()
