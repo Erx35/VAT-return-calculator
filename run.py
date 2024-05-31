@@ -142,43 +142,42 @@ def main():
 
         system('cls||clear')
 
-        match selection:
-            case '1':
-                print(f'Format of the VAT item entry is "item_name,price,vat_category"')
-                vat_item = input("Pleae enter your item data:\n")
-                data_str = vat_item.split(",")
-                validate_data_input(data_str)
+        if selection == '1':
+            print(f'Format of the VAT item entry is "item_name,price,vat_category"')
+            vat_item = input("Pleae enter your item data:\n")
+            data_str = vat_item.split(",")
+            validate_data_input(data_str)
 
-                try:
-                    list_item = VatListItem(data_str[0], float(data_str[1]), data_str[2])
-                    list_item.add_item_to_db()
-                    vat_value = list_item.get_vat_value()
-                    print(f'{list_item.name} has been entered to the database. VAT on the item is: {vat_value}')
-                    input_and_clear()
-                except ValueError as e:
-                    print(f'Could not add data to the database.')
+            try:
+                list_item = VatListItem(data_str[0], float(data_str[1]), data_str[2])
+                list_item.add_item_to_db()
+                vat_value = list_item.get_vat_value()
+                print(f'{list_item.name} has been entered to the database. VAT on the item is: {vat_value}')
+                input_and_clear()
+            except ValueError as e:
+                print(f'Could not add data to the database.')
 
-            case '2':
-                vat_return_total = calculate_vat_return()
-                if vat_return_total == 0:
-                    print(f'No data in the active database, please enter more data')
-                else:
-                    print(f'Calculated vat return is: {vat_return_total}')
-                add_vat_return_to_db(vat_return_total)
-                input_and_clear()
-            case '3':
-                print_db_content("item_list")
-                input_and_clear()
-            case '4':
-                print_db_content("registred_item_list")
-                input_and_clear()
-            case '5':
-                print("Thank you for using VAT calculator")
-                input_and_clear()
-                break
-            case _:
-                print(f'Please enter correct selection! You entered {selection}')
-                input_and_clear()
+        elif selection == '2':
+            vat_return_total = calculate_vat_return()
+            if vat_return_total == 0:
+                print(f'No data in the active database, please enter more data')
+            else:
+                print(f'Calculated vat return is: {vat_return_total}')
+            add_vat_return_to_db(vat_return_total)
+            input_and_clear()
+        elif selection == '3':
+            print_db_content("item_list")
+            input_and_clear()
+        elif selection == '4':
+            print_db_content("registred_item_list")
+            input_and_clear()
+        elif selection == '5':
+            print("Thank you for using VAT calculator")
+            input_and_clear()
+            break
+        else:
+            print(f'Please enter correct selection! You entered {selection}')
+            input_and_clear()
 
 
 main()
