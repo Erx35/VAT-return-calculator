@@ -51,7 +51,7 @@ Clear the terminal after user presses enter
 
 
 def input_and_clear():
-    input("Press enter to continue")
+    input("Press enter to continue\n")
     system('cls||clear')
 
 
