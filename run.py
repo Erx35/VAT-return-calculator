@@ -4,6 +4,8 @@
 import gspread
 from datetime import datetime
 from google.oauth2.service_account import Credentials
+from os import system
+import keyboard
 
 SCOPE = [
     "https://www.googleapis.com/auth/spreadsheets",
@@ -43,26 +45,41 @@ class VatListItem:
         worksheet_to_update.append_row([self.name, self.price, self.vat_class, str(datetime.now())])
 
 """
+Clear the terminal after user presses enter
+"""
+def input_and_clear():
+    input("Press enter to continue")
+    system('cls||clear')
+
+"""
+Print out the database entries
+"""
+def print_db_content(sheet):
+    all_items = SHEET.worksheet(sheet).get_all_values()[1:]
+    [print(item) for item in all_items]
+
+"""
 Calculate VAT for the whole DB entriwes
 """
 def calculate_vat_return():
     print("Calculating VAT return for items in the database")
     items_list = SHEET.worksheet("item_list").get_all_values()[1:]
-    vat_cats = SHEET.worksheet("vat_cat_list").get_all_values()[1:6]
-    new_dict = {vat_cats[i][0]: vat_cats[i][1] for i in range(len(vat_cats))}
-
     vat_return = 0
-    for item in items_list:
-        vat_return += float(item[1]) * float(new_dict[item[2]])
+    if items_list != []:
+        vat_cats = SHEET.worksheet("vat_cat_list").get_all_values()[1:6]
+        new_dict = {vat_cats[i][0]: vat_cats[i][1] for i in range(len(vat_cats))}
 
-    print("Removing calculated items from active database to backup database")
-    worksheet_to_update = SHEET.worksheet("registred_item_list")
+        for item in items_list:
+            vat_return += float(item[1]) * float(new_dict[item[2]])
 
-    for row in items_list:
-        worksheet_to_update.append_row(row)
+        print("Removing calculated items from active database to backup database")
+        worksheet_to_update = SHEET.worksheet("registred_item_list")
 
-    worksheet_to_delete = SHEET.worksheet("item_list")
-    worksheet_to_delete.delete_rows(2,99)
+        for row in items_list:
+            worksheet_to_update.append_row(row)
+
+        worksheet_to_delete = SHEET.worksheet("item_list")
+        worksheet_to_delete.delete_rows(2,99)
     
     return vat_return
 
@@ -70,22 +87,86 @@ def calculate_vat_return():
 Add calculated VAT return to the database
 """
 def add_vat_return_to_db(vat_return):
-    print("Adding calculated VAT return to the database")
-    data_str = [str(vat_return), str(datetime.now())]
-    worksheet_to_update = SHEET.worksheet("vat_report")
-    worksheet_to_update.append_row(data_str)
+    if vat_return != 0:
+        print("Adding calculated VAT return to the database")
+        data_str = [str(vat_return), str(datetime.now())]
+        worksheet_to_update = SHEET.worksheet("vat_report")
+        worksheet_to_update.append_row(data_str)
+
+
+"""
+Check that the VAT data input is valid
+"""
+def validate_data_input(data):
+    try:
+        if len(data) != 3:
+            raise ValueError(
+                f"Exactly 3 values required, you provided {len(data)}"
+            )
+    except ValueError as e:
+        print(f'Invalid data: {e}, please try again!\n')
 
 
 
+
+"""
+Main function
+"""
 def main():
-    print("welcome to Vat calculator")
-    print(f'Format of the VAT item entry is "item name,price,vat category')
-    vat_item = input("Pleae enter your item data:\n")
-    data_str = vat_item.split(",")
-    lsist_item = VatListItem(data_str[0], float(data_str[1]), data_str[2])
-    lsist_item.add_item_to_db()
+    print("Welcome to Vat calculator\n")
+    selection = ""
 
+    while True:
 
+        print("Please select from the following menu")
+        print("1. Enter VAT item")
+        print("2. Calculate VAT for the items in the database")
+        print("3. See items in the current database")
+        print("4. See items in archived database")
+        print("5. Exit")
 
-#main()
-calculate_vat_return()
+        selection = input("Please eneter your selection:\n")
+
+        system('cls||clear')
+
+        match selection:
+            case '1':
+                print(f'Format of the VAT item entry is "item_name,price,vat_category"')
+                vat_item = input("Pleae enter your item data:\n")
+                data_str = vat_item.split(",")
+                validate_data_input(data_str)
+
+                try:
+                    list_item = VatListItem(data_str[0], float(data_str[1]), data_str[2])
+                    list_item.add_item_to_db()
+                    vat_value = list_item.get_vat_value()
+                    print(f'{list_item.name} has been entered to the database. VAT on the item is: {vat_value}')
+                    input_and_clear()
+                except ValueError as e:
+                    print(f'Could not add data to the database.')
+
+            case '2':
+                vat_return_total = calculate_vat_return()
+                if vat_return_total == 0:
+                    print(f'No data in the active database, please enter more data')
+                else:
+                    print(f'Calculated vat return is: {vat_return_total}')
+                add_vat_return_to_db(vat_return_total)
+                input_and_clear()
+            case '3':
+                print_db_content("item_list")
+                input_and_clear()
+            case '4':
+                print_db_content("registred_item_list")
+                input_and_clear()
+            case '5':
+                print("Thank you for using VAT calculator")
+                input_and_clear()
+                break
+            case _:
+                print(f'Please enter correct selection! You entered {selection}')
+                input_and_clear()
+                 
+
+main()
+
