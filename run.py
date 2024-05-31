@@ -136,7 +136,8 @@ def main():
         print("2. Calculate VAT for the items in the database")
         print("3. See items in the current database")
         print("4. See items in archived database")
-        print("5. Exit")
+        print("5. See VAT reports and their date")
+        print("6. Exit")
 
         selection = input("Please eneter your selection:\n")
 
@@ -172,6 +173,9 @@ def main():
             print_db_content("registred_item_list")
             input_and_clear()
         elif selection == '5':
+            print_db_content("vat_report")
+            input_and_clear()
+        elif selection == '6':
             print("Thank you for using VAT calculator")
             input_and_clear()
             break
