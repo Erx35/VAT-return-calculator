@@ -145,7 +145,7 @@ def main():
 
         if selection == '1':
             print(f'Format of the VAT item entry is "item_name,price,vat_category"')
-            vat_item = input("Pleae enter your item data:\n")
+            vat_item = input("Please enter your item data:\n")
             data_str = vat_item.split(",")
             validate_data_input(data_str)
 
