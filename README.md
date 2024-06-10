@@ -69,8 +69,12 @@ The VAT item was designed to be a class. Class has 3 member variables, name, pri
 * PEP8 linter came back with no errors
 * Exceptions for the VAT item input were confirmed
 * Tested in Gitpod and Heroku terminals with no issues
+
+## Resaearch
+* Needed to research how to move, delete and transform data in the Google sheets. There are many websites that describe how Google sheets is used but most of them are not for Python. Had to test out many different methodologies to the the functionality working.
+
 ## Bugs
-* Fixed issue with data not being deleted from the main VAT item DB. Needed to research how to delete data from Google sheets.
+* Issue with data not being deleted from the main VAT item DB - Status Fixed
 
 ## Remaining Bugs
 There are no remaining bugs
